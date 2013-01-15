@@ -50,7 +50,10 @@ public class FreemarkerViewRenderer implements ViewRenderer {
                        OutputStream output) throws IOException, WebApplicationException {
         try {
             final Configuration configuration = configurationCache.getUnchecked(view.getClass());
-            final Template template = configuration.getTemplate(view.getTemplateName(), locale);
+            String encoding = System.getProperty("file.encoding");
+            final Template template = encoding == null || encoding.isEmpty()?
+                configuration.getTemplate(view.getTemplateName(), locale) :
+                configuration.getTemplate(view.getTemplateName(), locale, encoding);
             template.process(view, new OutputStreamWriter(output, template.getEncoding()));
         } catch (TemplateException e) {
             throw new ContainerException(e);
