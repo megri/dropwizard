@@ -53,9 +53,10 @@ public class FreemarkerViewRenderer implements ViewRenderer {
             final Configuration configuration = new Configuration();
             configuration.setObjectWrapper(new DefaultObjectWrapper());
             String templateName = viewClass.view.getTemplateName();
-            String encoding = detectViewEncoding(templateName);
+            String templatePath = this.getClass().getResource(templateName).getPath();
+            String encoding = detectViewEncoding(templatePath);
             if (encoding == null) {
-                configuration.loadBuiltInEncodingMap();
+//                configuration.loadBuiltInEncodingMap();
                 configuration.setDefaultEncoding(Charsets.UTF_8.name());
             } else {
                 configuration.setDefaultEncoding(encoding);
@@ -64,12 +65,12 @@ public class FreemarkerViewRenderer implements ViewRenderer {
             return configuration;
         }
 
-        private static String detectViewEncoding(String viewName) {
+        private static String detectViewEncoding(String templatePath) {
             String encoding;
 
             try {
                 byte[] buf = new byte[4096];
-                java.io.FileInputStream fis = new java.io.FileInputStream(viewName);
+                java.io.FileInputStream fis = new java.io.FileInputStream(templatePath);
                 UniversalDetector detector = new UniversalDetector(null);
                 int nread;
                 while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
